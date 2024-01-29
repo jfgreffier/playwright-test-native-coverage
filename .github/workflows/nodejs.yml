@@ -18,9 +18,3 @@ jobs:
       run: npx playwright install --with-deps
     - name: Run end-to-end tests
       run: npm test
-    - run: npx nyc report --reporter=lcovonly
-    - name: Upload to Coveralls
-      uses: coverallsapp/github-action@v2
-      with:
-        github-token: ${{ secrets.GITHUB_TOKEN }}
-
