@@ -3,29 +3,32 @@ import * as path from 'path';
 import * as crypto from 'crypto';
 import { test as baseTest } from '@playwright/test';
 
-const istanbulCLIOutput = path.join(process.cwd(), '.nyc_output');
+const C8Output = path.join(process.cwd(), 'coverage/tmp');
 
 export function generateUUID(): string {
   return crypto.randomBytes(16).toString('hex');
 }
 
 export const test = baseTest.extend({
-  context: async ({ context }, use) => {
-    await context.addInitScript(() =>
-      window.addEventListener('beforeunload', () =>
-        (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__))
-      ),
-    );
-    await fs.promises.mkdir(istanbulCLIOutput, { recursive: true });
-    await context.exposeFunction('collectIstanbulCoverage', (coverageJSON: string) => {
-      if (coverageJSON)
-        fs.writeFileSync(path.join(istanbulCLIOutput, `playwright_coverage_${generateUUID()}.json`), coverageJSON);
-    });
-    await use(context);
-    for (const page of context.pages()) {
-      await page.evaluate(() => (window as any).collectIstanbulCoverage(JSON.stringify((window as any).__coverage__)))
+  page: async ({ page, browserName }, use) => {
+    const isCoverageSupported = browserName === 'chromium';
+
+    if (!isCoverageSupported) {
+      await use(page);
+      return;
     }
-  }
+
+    await page.coverage.startJSCoverage();
+    await use(page);
+    const JSCoverage = await page.coverage.stopJSCoverage();
+
+    await fs.promises.mkdir(C8Output, { recursive: true });
+    const coverageJSON = JSON.stringify({ result: JSCoverage }, null, 2);
+    await fs.promises.writeFile(
+      path.join(C8Output, `playwright-coverage-${generateUUID()}.json`),
+      coverageJSON
+    );
+  },
 });
 
 export const expect = test.expect;

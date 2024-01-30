@@ -6,12 +6,12 @@ This example demonstrates how to use Playwright Test to collect coverage data du
 
 ## Prerequisites
 
-TODO
+Coverage APIs are only supported on Chromium-based browsers.
 
 ## Usage
 
 - Place [`baseFixtures.ts`](./e2e/baseFixtures.ts) into your test directory. Instead of requiring `@playwright/test` to get the test object, use `./baseFixtures`.
-- This will collect the corresponding coverage files into the `.nyc_output` directory.
+- This will collect the corresponding coverage files into the `coverage/tmp` directory.
 - For an example test, see [App.test.ts](/e2e/App.test.ts)
 
 ## Coverage formats
@@ -23,5 +23,3 @@ TODO
 ## Used tools
 
 - [vite](https://vitejs.dev/) - tooling and bundling for React
-- [vite-plugin-istanbul](https://github.com/ifaxity/vite-plugin-istanbul) - to add coverage information
-- [nyc](https://github.com/istanbuljs/nyc) - Istanbul CLI to generate lcov coverage
