@@ -11,7 +11,7 @@ Coverage APIs are only supported on Chromium-based browsers.
 ## Usage
 
 - Place [`baseFixtures.ts`](./e2e/baseFixtures.ts) into your test directory. Instead of requiring `@playwright/test` to get the test object, use `./baseFixtures`.
-- This will collect the corresponding coverage files into the `coverage/tmp` directory.
+- This will collect the corresponding coverage as attachment.
 - For an example test, see [App.test.ts](/e2e/App.test.ts)
 
 ## Coverage formats
