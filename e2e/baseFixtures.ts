@@ -1,4 +1,5 @@
 import { test as baseTest } from '@playwright/test';
+import { v8ToIstanbul } from '@web/test-runner-coverage-v8';
 
 export const test = baseTest.extend({
   page: async ({ page, browserName }, use, testInfo) => {
@@ -13,7 +14,11 @@ export const test = baseTest.extend({
     await use(page);
     const JSCoverage = await page.coverage.stopJSCoverage();
 
-    const coverageJSON = JSON.stringify({ result: JSCoverage }, null, 2);
+    const reporter = testInfo.config.reporter.find((reporter) => reporter[0].includes('my-awesome-reporter'))
+    const config = reporter?.[1];
+    
+    const coverageMapData = await v8ToIstanbul(config, [], JSCoverage);
+    const coverageJSON = JSON.stringify(coverageMapData, null, 2);
     testInfo.attach('coverage', { body: coverageJSON });
   },
 });

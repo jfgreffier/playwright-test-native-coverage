@@ -1,30 +1,49 @@
+import * as fs from 'fs';
+import * as path from 'path';
+import * as crypto from 'crypto';
 import type {
-  FullConfig,
   FullResult,
   Reporter,
-  Suite,
   TestCase,
   TestResult,
 } from '@playwright/test/reporter';
 
 class MyReporter implements Reporter {
-  onBegin(config: FullConfig, suite: Suite) {
-    console.log(`Starting the run with ${suite.allTests().length} tests`);
-  }
+  private JSCoverages: any[] = [];
 
-  onTestBegin(test: TestCase, result: TestResult) {
-    console.log(`Starting test ${test.title}`);
+  private getCoverageFromAttachment(attachment: {
+    name: any;
+    contentType?: string;
+    path?: string | undefined;
+    body?: Buffer | undefined;
+  }) {
+    if (attachment.name !== 'coverage') {
+      return;
+    }
+    if (!attachment.body) {
+      return;
+    }
+    return JSON.parse(attachment.body.toString());
   }
 
   onTestEnd(test: TestCase, result: TestResult) {
     for (const attachment of result.attachments) {
-      console.log(attachment.name);
+      const JSCoverage = this.getCoverageFromAttachment(attachment);
+      if (JSCoverage) {
+        this.JSCoverages.push(JSCoverage);
+      }
     }
-    console.log(`Finished test ${test.title}: ${result.status}`);
   }
 
-  onEnd(result: FullResult) {
-    console.log(`Finished the run: ${result.status}`);
+  async onEnd(result: FullResult) {
+    const generateUUID = () => crypto.randomBytes(16).toString('hex');
+
+    for (const JSCoverage of this.JSCoverages) {
+      await fs.promises.writeFile(
+        path.join('.nyc_output', `playwright-coverage-${generateUUID()}.json`),
+        JSON.stringify(JSCoverage)
+      );
+    }
   }
 }
 

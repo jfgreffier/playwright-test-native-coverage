@@ -6,7 +6,20 @@ export default defineConfig({
     port: 5173,
   },
   globalSetup: require.resolve('./global-setup'),
-  reporter: './e2e/my-awesome-reporter.ts',
+  reporter: [
+    [
+      './e2e/my-awesome-reporter.ts',
+      {
+        rootDir: process.cwd(),
+        hostname: 'localhost',
+        port: 5173,
+        coverageConfig: {
+          include: ['src/*'],
+          exclude: ['nothing'],
+        },
+      },
+    ],
+  ],
   projects: [
     {
       name: 'Chrome',

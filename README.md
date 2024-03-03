@@ -18,8 +18,12 @@ Coverage APIs are only supported on Chromium-based browsers.
 
 Helpful commands are the following:
 
-TODO
+- `npx nyc report --reporter=html` -> Writes an HTML report to `coverage/index.html`.
+- `npx nyc report --reporter=lcov` -> commonly used to upload to Coveralls or [Codecov](https://about.codecov.io/).
+- `npx nyc report --reporter=text` -> CLI output how the current code coverage per file and statement will look like.
 
 ## Used tools
 
 - [vite](https://vitejs.dev/) - tooling and bundling for React
+- [@web/test-runner-coverage-v8](https://github.com/modernweb-dev/web/tree/master/packages/test-runner-coverage-v8) - to convert V8 to Istanbul with fetching SourceMaps and nice config
+- [nyc](https://github.com/istanbuljs/nyc) - Istanbul CLI to generate lcov coverage
