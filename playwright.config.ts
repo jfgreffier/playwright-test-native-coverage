@@ -6,6 +6,7 @@ export default defineConfig({
     port: 5173,
   },
   globalSetup: require.resolve('./global-setup'),
+  reporter: './e2e/my-awesome-reporter.ts',
   projects: [
     {
       name: 'Chrome',
